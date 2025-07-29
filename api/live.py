@@ -41,6 +41,20 @@ def get_live_price(
     else:
         fetchers = list(fetcher)
 
+    # Only use fetchers that support the requested ticker type
+    if ticker_type is None:
+        fetchers = [
+            f
+            for f in fetchers
+            if None in getattr(f, "supported_ticker_types", (None,))
+        ]
+    else:
+        fetchers = [
+            f
+            for f in fetchers
+            if ticker_type in getattr(f, "supported_ticker_types", ())
+        ]
+
     prices = []
     for f in fetchers:
         p = f.get_price(ticker, ticker_type)

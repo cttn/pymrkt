@@ -206,6 +206,23 @@ price, updated_at = get_live_price(
 En el archivo `main.py` se muestra un ejemplo que utiliza el valor definido en
 `config/config.yaml` para reducir la cantidad de llamadas externas.
 
+### Uso simultáneo de varios fetchers
+
+`get_live_price` también acepta una lista de *fetchers*. Podés activar varios a
+la vez y el sistema usará solo aquellos que soporten el tipo de ticker
+solicitado. Por ejemplo, combinando `YFinanceFetcher` con `BancoPianoFetcher`:
+
+```python
+from fetchers import YFinanceFetcher, BancoPianoFetcher
+from api.live import get_live_price
+
+fetchers = [YFinanceFetcher(), BancoPianoFetcher()]
+price, updated_at = get_live_price("AL30", fetchers, ticker_type="bonos")
+```
+
+La función filtrará automáticamente los *fetchers* para que cada consulta se
+realice solo a las fuentes adecuadas.
+
 ---
 
 ## 🔐 Seguridad
