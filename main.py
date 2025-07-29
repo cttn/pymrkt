@@ -2,7 +2,7 @@
 
 import argparse
 
-from fetchers import DummyFetcher
+from fetchers import YFinanceFetcher
 from api import get_live_price
 from config import get_lock_minutes
 from storage import live as live_db
@@ -17,7 +17,7 @@ def main() -> None:
     args = parser.parse_args()
 
     init_db.main()
-    fetcher = DummyFetcher()
+    fetcher = YFinanceFetcher()
     lock_minutes = get_lock_minutes()
 
     tickers = live_db.list_tickers()
