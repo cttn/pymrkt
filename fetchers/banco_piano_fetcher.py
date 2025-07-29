@@ -55,9 +55,14 @@ class BancoPianoFetcher(PriceFetcher):
             if row.empty:
                 logger.debug("No se encontró fila para el ticker %s", ticker)
                 return None
-            # buscar columna de venta (ej: "Venta" o "VENTA T+2")
+            # buscar columna con el precio de referencia ("Venta" o "Último")
             venta_col = None
-            patterns = [r"VENTA\s*T\+?2", r"VENTA"]
+            patterns = [
+                r"VENTA\s*T\+?2",
+                r"VENTA",
+                r"ÚLTIMO",
+                r"ULTIMO",
+            ]
             for pattern in patterns:
                 for col in self._df.columns:
                     if re.search(pattern, str(col), re.IGNORECASE):
