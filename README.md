@@ -21,6 +21,7 @@ Cada fuente de precios está representada como un módulo `fetcher`, que impleme
 
 ```python
 class PriceFetcher:
+    supported_ticker_types: Tuple[Optional[str], ...]
     def get_price(self, ticker: str, ticker_type: Optional[str] = None) -> Optional[float]: ...
     def get_history(self, ticker: str, start: date, end: date) -> List[Tuple[date, float]]: ...
 ```

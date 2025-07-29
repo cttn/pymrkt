@@ -3,7 +3,15 @@ from typing import Optional
 
 
 class PriceFetcher(ABC):
-    """Interface for price fetchers."""
+    """Interface for price fetchers.
+
+    Subclasses should define :pyattr:`supported_ticker_types` listing the
+    ``ticker_type`` values they can handle. ``None`` indicates that the fetcher
+    supports queries where no ticker type was specified.
+    """
+
+    #: Tuple of supported ticker types. ``None`` means "no type provided".
+    supported_ticker_types: tuple[Optional[str], ...] = (None,)
 
     @abstractmethod
     def get_price(self, ticker: str, ticker_type: Optional[str] = None) -> Optional[float]:
