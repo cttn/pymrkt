@@ -21,7 +21,7 @@ Cada fuente de precios está representada como un módulo `fetcher`, que impleme
 
 ```python
 class PriceFetcher:
-    def get_price(self, ticker: str) -> Optional[float]: ...
+    def get_price(self, ticker: str, ticker_type: Optional[str] = None) -> Optional[float]: ...
     def get_history(self, ticker: str, start: date, end: date) -> List[Tuple[date, float]]: ...
 ```
 
@@ -154,7 +154,10 @@ Una vez levantado el servidor (la dirección y el puerto se definen en
 precio de un ticker usando `curl`:
 
 ```bash
+# Por defecto
 curl http://127.0.0.1:8000/price/AAPL
+# Con tipo de ticker (por ejemplo "acciones")
+curl http://127.0.0.1:8000/price/acciones/AAPL
 ```
 
 La respuesta será un JSON similar a:
@@ -176,11 +179,11 @@ from scripts.init_db import main as init_db
 
 init_db()
 fetcher = DummyFetcher()
-price, updated_at = get_live_price("AAPL", fetcher)
+price, updated_at = get_live_price("AAPL", fetcher, ticker_type="acciones")
 print(price, updated_at)
 ```
 
-El resultado queda almacenado en `storage/live.db`. Si solicitás nuevamente el
+El resultado queda almacenado en `storage/live.acciones.db`. Si solicitás nuevamente el
 precio antes de que pasen 15 minutos (valor configurable con `lock_minutes` en
 `config/config.yaml`), se devolverá el último precio guardado sin contactar al
 *fetcher*.
@@ -194,7 +197,9 @@ defecto este valor se obtiene desde `config/config.yaml`. Si establecés
 el almacenado en la base. Podés ajustarlo a tus necesidades:
 
 ```python
-price, updated_at = get_live_price("AAPL", fetcher, lock_minutes=5)
+price, updated_at = get_live_price(
+    "AAPL", fetcher, lock_minutes=5, ticker_type="acciones"
+)
 ```
 
 En el archivo `main.py` se muestra un ejemplo que utiliza el valor definido en
