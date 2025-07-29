@@ -5,7 +5,12 @@ from fetchers import PriceFetcher
 from storage import live as live_db
 
 
-def get_live_price(ticker: str, fetcher: PriceFetcher, lock_minutes: int = 15) -> Optional[float]:
+def get_live_price(
+    ticker: str,
+    fetcher: PriceFetcher,
+    lock_minutes: int = 15,
+    debug: bool = False,
+) -> Optional[float]:
     """Return up-to-date price for ticker using the provided fetcher."""
     record = live_db.get_price(ticker)
     now = datetime.utcnow()
@@ -13,6 +18,8 @@ def get_live_price(ticker: str, fetcher: PriceFetcher, lock_minutes: int = 15) -
     if record:
         price, updated_at = record
         if now - updated_at < timedelta(minutes=lock_minutes):
+            if debug:
+                print(f"[DEBUG] {ticker}: using cached price from DB")
             return price
     else:
         price = None
@@ -20,7 +27,13 @@ def get_live_price(ticker: str, fetcher: PriceFetcher, lock_minutes: int = 15) -
     new_price = fetcher.get_price(ticker)
     if new_price is not None:
         live_db.upsert_price(ticker, new_price, now)
+        if debug:
+            print(
+                f"[DEBUG] {ticker}: fetched price from {fetcher.__class__.__name__}"
+            )
         return new_price
 
     # If fetching failed and we had an old price, return it
+    if debug and price is not None:
+        print(f"[DEBUG] {ticker}: fetch failed, returning cached price")
     return price
