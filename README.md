@@ -157,7 +157,7 @@ curl http://127.0.0.1:8000/price/AAPL
 La respuesta será un JSON similar a:
 
 ```json
-{"ticker": "AAPL", "price": 123.45}
+{"ticker": "AAPL", "price": 123.45, "updated_at": "2023-01-01T12:00:00Z"}
 ```
 
 ### Uso de la lógica de fetching
@@ -173,8 +173,8 @@ from scripts.init_db import main as init_db
 
 init_db()
 fetcher = DummyFetcher()
-price = get_live_price("AAPL", fetcher)
-print(price)
+price, updated_at = get_live_price("AAPL", fetcher)
+print(price, updated_at)
 ```
 
 El resultado queda almacenado en `storage/live.db`. Si solicitás nuevamente el
@@ -191,7 +191,7 @@ defecto este valor se obtiene desde `config/config.yaml`. Si establecés
 el almacenado en la base. Podés ajustarlo a tus necesidades:
 
 ```python
-price = get_live_price("AAPL", fetcher, lock_minutes=5)
+price, updated_at = get_live_price("AAPL", fetcher, lock_minutes=5)
 ```
 
 En el archivo `main.py` se muestra un ejemplo que utiliza el valor definido en

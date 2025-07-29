@@ -14,10 +14,15 @@ except Exception:
 
 @app.get("/price/{ticker}")
 def price_endpoint(ticker: str):
-    price = get_live_price(ticker, fetcher, lock_minutes=get_lock_minutes())
-    if price is None:
+    result = get_live_price(ticker, fetcher, lock_minutes=get_lock_minutes())
+    if result is None:
         raise HTTPException(status_code=404, detail="Price not available")
-    return {"ticker": ticker.upper(), "price": price}
+    price, updated_at = result
+    return {
+        "ticker": ticker.upper(),
+        "price": price,
+        "updated_at": updated_at.isoformat() + "Z",
+    }
 
 
 if __name__ == "__main__":
