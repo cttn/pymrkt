@@ -1,9 +1,13 @@
 import io
+import logging
+import re
 import requests
 import pandas as pd
 from typing import Optional, List, Tuple
 
 from .base import PriceFetcher
+
+logger = logging.getLogger(__name__)
 
 
 class BancoPianoFetcher(PriceFetcher):
@@ -49,14 +53,20 @@ class BancoPianoFetcher(PriceFetcher):
             mask = self._df.iloc[:, 0].astype(str).str.contains(ticker, case=False, na=False)
             row = self._df.loc[mask]
             if row.empty:
+                logger.debug("No se encontró fila para el ticker %s", ticker)
                 return None
-            # find column containing "VENTA"
+            # buscar columna de venta (ej: "Venta" o "VENTA T+2")
             venta_col = None
-            for col in self._df.columns:
-                if "VENTA" in str(col).upper():
-                    venta_col = col
+            patterns = [r"VENTA\s*T\+?2", r"VENTA"]
+            for pattern in patterns:
+                for col in self._df.columns:
+                    if re.search(pattern, str(col), re.IGNORECASE):
+                        venta_col = col
+                        break
+                if venta_col is not None:
                     break
             if venta_col is None:
+                logger.debug("No se encontró columna de venta en la tabla")
                 return None
             value = str(row.iloc[0][venta_col])
             value = value.replace(".", "").replace(",", ".")
