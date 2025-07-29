@@ -159,6 +159,20 @@ El resultado queda almacenado en `storage/live.db`. Si solicitás nuevamente el
 precio antes de que pasen 15 minutos (valor configurable con `lock_minutes`), se
 devolverá el último precio guardado sin contactar al *fetcher*.
 
+### Configuración del tiempo de *lock*
+
+`get_live_price` acepta un parámetro opcional `lock_minutes` que define cuántos
+minutos deben transcurrir antes de volver a consultar a la fuente de datos. Si
+establecés `lock_minutes=0`, el servicio buscará siempre un precio nuevo en lugar
+de usar el almacenado en la base. Podés ajustarlo a tus necesidades:
+
+```python
+price = get_live_price("AAPL", fetcher, lock_minutes=5)
+```
+
+En el archivo `main.py` se muestra un ejemplo utilizando `lock_minutes=30` para
+reducir la cantidad de llamadas externas.
+
 ---
 
 ## 🔐 Seguridad
