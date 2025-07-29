@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
+from config import get_lock_minutes
+
 from fetchers import PriceFetcher
 from storage import live as live_db
 
@@ -8,10 +10,12 @@ from storage import live as live_db
 def get_live_price(
     ticker: str,
     fetcher: PriceFetcher,
-    lock_minutes: int = 15,
+    lock_minutes: Optional[int] = None,
     debug: bool = False,
 ) -> Optional[float]:
     """Return up-to-date price for ticker using the provided fetcher."""
+    if lock_minutes is None:
+        lock_minutes = get_lock_minutes()
     record = live_db.get_price(ticker)
     now = datetime.utcnow()
 
