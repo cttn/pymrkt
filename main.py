@@ -2,7 +2,7 @@
 
 import argparse
 
-from fetchers import YFinanceFetcher
+from fetchers import YFinanceFetcher, DummyFetcher, BancoPianoFetcher
 from api import get_live_price
 from config import get_lock_minutes
 from storage import live as live_db
@@ -17,13 +17,23 @@ def main() -> None:
     args = parser.parse_args()
 
     init_db.main()
-    fetcher = YFinanceFetcher()
+    fetchers = []
+    try:
+        fetchers.append(YFinanceFetcher())
+    except Exception:
+        pass
+    try:
+        fetchers.append(BancoPianoFetcher())
+    except Exception:
+        pass
+    if not fetchers:
+        fetchers.append(DummyFetcher())
     lock_minutes = get_lock_minutes()
 
     tickers = live_db.list_tickers()
     for ticker in tickers:
         result = get_live_price(
-            ticker, fetcher, lock_minutes=lock_minutes, debug=args.debug
+            ticker, fetchers, lock_minutes=lock_minutes, debug=args.debug
         )
         if result is None:
             print(ticker, "N/A")

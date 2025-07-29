@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Iterable, Union, List
+from statistics import median
 
 from config import get_lock_minutes
 
@@ -9,7 +10,7 @@ from storage import live as live_db
 
 def get_live_price(
     ticker: str,
-    fetcher: PriceFetcher,
+    fetcher: Union[PriceFetcher, Iterable[PriceFetcher]],
     lock_minutes: Optional[int] = None,
     debug: bool = False,
     ticker_type: Optional[str] = None,
@@ -35,13 +36,22 @@ def get_live_price(
         price = None
         updated_at = None
 
-    new_price = fetcher.get_price(ticker, ticker_type)
-    if new_price is not None:
+    if isinstance(fetcher, PriceFetcher):
+        fetchers: List[PriceFetcher] = [fetcher]
+    else:
+        fetchers = list(fetcher)
+
+    prices = []
+    for f in fetchers:
+        p = f.get_price(ticker, ticker_type)
+        if p is not None:
+            prices.append(p)
+            if debug:
+                print(f"[DEBUG] {ticker}: fetched price from {f.__class__.__name__}")
+
+    if prices:
+        new_price = median(prices)
         live_db.upsert_price(ticker, new_price, now, db_file=db_file)
-        if debug:
-            print(
-                f"[DEBUG] {ticker}: fetched price from {fetcher.__class__.__name__}"
-            )
         return new_price, now
 
     # If fetching failed and we had an old price, return it
