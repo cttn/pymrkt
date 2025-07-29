@@ -1,4 +1,5 @@
 # Configuración de pymrkt
+lock_minutes: 15
 sources:
   - name: yfinance
     enabled: true

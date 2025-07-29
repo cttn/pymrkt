@@ -4,6 +4,7 @@ import argparse
 
 from fetchers import DummyFetcher
 from api import get_live_price
+from config import get_lock_minutes
 from scripts import init_db
 
 
@@ -16,9 +17,10 @@ def main() -> None:
 
     init_db.main()
     fetcher = DummyFetcher()
+    lock_minutes = get_lock_minutes()
 
     for ticker in ["AAPL", "MSFT", "GGAL"]:
-        price = get_live_price(ticker, fetcher, lock_minutes=30, debug=args.debug)
+        price = get_live_price(ticker, fetcher, lock_minutes=lock_minutes, debug=args.debug)
         print(ticker, price)
 
 
