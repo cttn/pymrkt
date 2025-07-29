@@ -145,6 +145,21 @@ python main.py --debug
 python -m api.server
 ```
 
+8. Consultar la API
+
+Una vez levantado el servidor (por defecto en `http://127.0.0.1:8000`), podés
+obtener el precio de un ticker usando `curl`:
+
+```bash
+curl http://127.0.0.1:8000/price/AAPL
+```
+
+La respuesta será un JSON similar a:
+
+```json
+{"ticker": "AAPL", "price": 123.45}
+```
+
 ### Uso de la lógica de fetching
 
 Luego de inicializar las bases de datos, podés obtener precios de forma manual
