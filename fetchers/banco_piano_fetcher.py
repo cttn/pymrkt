@@ -8,6 +8,9 @@ from .base import PriceFetcher
 class BancoPianoFetcher(PriceFetcher):
     """Fetch bond prices from Banco Piano."""
 
+    #: Banco Piano solo publica precios de bonos
+    supported_ticker_types = ("bonos",)
+
     URL = "https://www.bancopiano.com.ar/Inversiones/Cotizaciones/Bonos/"
 
     def __init__(self) -> None:
