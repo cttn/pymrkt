@@ -1,0 +1,6 @@
+# Configuración de pymrkt
+sources:
+  - name: yfinance
+    enabled: true
+    tickers: [AAPL, MSFT, GGAL]
+    interval_minutes: 15
