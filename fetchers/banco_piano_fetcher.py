@@ -1,3 +1,4 @@
+import io
 import requests
 import pandas as pd
 from typing import Optional, List, Tuple
@@ -19,13 +20,23 @@ class BancoPianoFetcher(PriceFetcher):
     def _load_dataframe(self) -> None:
         if self._df is not None:
             return
-        try:
-            resp = requests.get(self.URL)
-            resp.raise_for_status()
-            tables = pd.read_html(resp.text)
-            self._df = tables[0] if tables else None
-        except Exception:
-            self._df = None
+
+        attempts = 0
+        while attempts < 3:
+            try:
+                resp = requests.get(self.URL)
+                resp.raise_for_status()
+                tables = pd.read_html(io.StringIO(resp.text))
+                self._df = tables[0] if tables else None
+                if self._df is not None and not self._df.empty:
+                    break
+            except requests.RequestException:
+                # Connection error, retry
+                self._df = None
+            except Exception:
+                self._df = None
+                break
+            attempts += 1
 
     def get_price(self, ticker: str, ticker_type: Optional[str] = None) -> Optional[float]:
         if ticker_type not in {None, "bonos"}:
