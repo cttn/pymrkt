@@ -131,6 +131,27 @@ python scripts/init_db.py
 python main.py
 ```
 
+### Uso de la lógica de fetching
+
+Luego de inicializar las bases de datos, podés obtener precios de forma manual
+llamando a la función `get_live_price` junto con el *fetcher* que prefieras. Por
+ejemplo, utilizando el `DummyFetcher` incluido:
+
+```python
+from fetchers import DummyFetcher
+from api.live import get_live_price
+from scripts.init_db import main as init_db
+
+init_db()
+fetcher = DummyFetcher()
+price = get_live_price("AAPL", fetcher)
+print(price)
+```
+
+El resultado queda almacenado en `storage/live.db`. Si solicitás nuevamente el
+precio antes de que pasen 15 minutos (valor configurable con `lock_minutes`), se
+devolverá el último precio guardado sin contactar al *fetcher*.
+
 ---
 
 ## 🔐 Seguridad
