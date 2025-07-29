@@ -1,21 +1,32 @@
 from fastapi import FastAPI, HTTPException
 
 from config import get_lock_minutes, get_server_host, get_server_port
-from fetchers import YFinanceFetcher, DummyFetcher
+from fetchers import YFinanceFetcher, DummyFetcher, BancoPianoFetcher
 from .live import get_live_price
 
 app = FastAPI()
 
+fetchers = []
 try:
-    fetcher = YFinanceFetcher() if YFinanceFetcher is not None else DummyFetcher()
+    if YFinanceFetcher is not None:
+        fetchers.append(YFinanceFetcher())
 except Exception:
-    fetcher = DummyFetcher()
+    pass
+
+try:
+    if BancoPianoFetcher is not None:
+        fetchers.append(BancoPianoFetcher())
+except Exception:
+    pass
+
+if not fetchers:
+    fetchers.append(DummyFetcher())
 
 
 @app.get("/price/{ticker_type}/{ticker}")
 def price_with_type_endpoint(ticker_type: str, ticker: str):
     result = get_live_price(
-        ticker, fetcher, lock_minutes=get_lock_minutes(), ticker_type=ticker_type
+        ticker, fetchers, lock_minutes=get_lock_minutes(), ticker_type=ticker_type
     )
     if result is None:
         raise HTTPException(status_code=404, detail="Price not available")
@@ -27,9 +38,14 @@ def price_with_type_endpoint(ticker_type: str, ticker: str):
     }
 
 
+@app.get("/bonos/{ticker}")
+def bonos_endpoint(ticker: str):
+    return price_with_type_endpoint("bonos", ticker)
+
+
 @app.get("/price/{ticker}")
 def price_endpoint(ticker: str):
-    result = get_live_price(ticker, fetcher, lock_minutes=get_lock_minutes())
+    result = get_live_price(ticker, fetchers, lock_minutes=get_lock_minutes())
     if result is None:
         raise HTTPException(status_code=404, detail="Price not available")
     price, updated_at = result
