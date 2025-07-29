@@ -131,6 +131,13 @@ python scripts/init_db.py
 python main.py
 ```
 
+Si querés ver mensajes de depuración durante la ejecución, podés agregar la
+bandera `--debug`:
+
+```bash
+python main.py --debug
+```
+
 ### Uso de la lógica de fetching
 
 Luego de inicializar las bases de datos, podés obtener precios de forma manual
