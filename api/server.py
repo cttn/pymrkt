@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 
-from config import get_lock_minutes
+from config import get_lock_minutes, get_server_host, get_server_port
 from fetchers import YFinanceFetcher, DummyFetcher
 from .live import get_live_price
 
@@ -28,5 +28,5 @@ def price_endpoint(ticker: str):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host=get_server_host(), port=get_server_port())
 

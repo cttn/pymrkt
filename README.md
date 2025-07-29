@@ -144,11 +144,14 @@ python main.py --debug
 ```bash
 python -m api.server
 ```
+El host y el puerto utilizados por la API se pueden ajustar en
+`config/config.yaml`.
 
 8. Consultar la API
 
-Una vez levantado el servidor (por defecto en `http://127.0.0.1:8000`), podés
-obtener el precio de un ticker usando `curl`:
+Una vez levantado el servidor (la dirección y el puerto se definen en
+`config/config.yaml`, por defecto `http://127.0.0.1:8000`), podés obtener el
+precio de un ticker usando `curl`:
 
 ```bash
 curl http://127.0.0.1:8000/price/AAPL
