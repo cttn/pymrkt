@@ -139,6 +139,12 @@ bandera `--debug`:
 python main.py --debug
 ```
 
+7. Levantar la API local
+
+```bash
+python -m api.server
+```
+
 ### Uso de la lógica de fetching
 
 Luego de inicializar las bases de datos, podés obtener precios de forma manual

@@ -1,7 +1,7 @@
 from pathlib import Path
 import sqlite3
 from datetime import datetime
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
 DB_FILE = Path(__file__).resolve().parent / "live.db"
 
@@ -37,6 +37,16 @@ def get_price(ticker: str) -> Optional[Tuple[float, datetime]]:
         price, ts = row
         return price, datetime.fromisoformat(ts)
     return None
+
+
+def list_tickers() -> List[str]:
+    """Return all tickers currently stored in the database."""
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute("SELECT ticker FROM prices")
+    tickers = [r[0] for r in c.fetchall()]
+    conn.close()
+    return tickers
 
 
 def upsert_price(ticker: str, price: float, timestamp: Optional[datetime] = None) -> None:
