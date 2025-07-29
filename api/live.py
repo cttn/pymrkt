@@ -12,11 +12,17 @@ def get_live_price(
     fetcher: PriceFetcher,
     lock_minutes: Optional[int] = None,
     debug: bool = False,
+    ticker_type: Optional[str] = None,
 ) -> Optional[Tuple[float, datetime]]:
-    """Return up-to-date price and timestamp for ``ticker``."""
+    """Return up-to-date price and timestamp for ``ticker``.
+
+    ``ticker_type`` selects the database to use and may influence the
+    fetcher behaviour.
+    """
     if lock_minutes is None:
         lock_minutes = get_lock_minutes()
-    record = live_db.get_price(ticker)
+    db_file = live_db.get_db_file(ticker_type)
+    record = live_db.get_price(ticker, db_file=db_file)
     now = datetime.utcnow()
 
     if record:
@@ -29,9 +35,9 @@ def get_live_price(
         price = None
         updated_at = None
 
-    new_price = fetcher.get_price(ticker)
+    new_price = fetcher.get_price(ticker, ticker_type)
     if new_price is not None:
-        live_db.upsert_price(ticker, new_price, now)
+        live_db.upsert_price(ticker, new_price, now, db_file=db_file)
         if debug:
             print(
                 f"[DEBUG] {ticker}: fetched price from {fetcher.__class__.__name__}"

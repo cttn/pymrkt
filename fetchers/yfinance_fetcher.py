@@ -7,7 +7,13 @@ from .base import PriceFetcher
 class YFinanceFetcher(PriceFetcher):
     """Fetch prices using yfinance."""
 
-    def get_price(self, ticker: str) -> Optional[float]:
+    def get_price(self, ticker: str, ticker_type: Optional[str] = None) -> Optional[float]:
+        if ticker_type in {"acciones", "cedears"}:
+            ticker = f"{ticker}.BA"
+        elif ticker_type not in {None, "acciones", "cedears"}:
+            # Unsupported ticker type
+            return None
+
         try:
             data = yf.Ticker(ticker)
             price = data.info.get("regularMarketPrice")

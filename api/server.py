@@ -12,6 +12,21 @@ except Exception:
     fetcher = DummyFetcher()
 
 
+@app.get("/price/{ticker_type}/{ticker}")
+def price_with_type_endpoint(ticker_type: str, ticker: str):
+    result = get_live_price(
+        ticker, fetcher, lock_minutes=get_lock_minutes(), ticker_type=ticker_type
+    )
+    if result is None:
+        raise HTTPException(status_code=404, detail="Price not available")
+    price, updated_at = result
+    return {
+        "ticker": ticker.upper(),
+        "price": price,
+        "updated_at": updated_at.isoformat() + "Z",
+    }
+
+
 @app.get("/price/{ticker}")
 def price_endpoint(ticker: str):
     result = get_live_price(ticker, fetcher, lock_minutes=get_lock_minutes())

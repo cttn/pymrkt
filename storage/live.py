@@ -1,14 +1,29 @@
 from pathlib import Path
 import sqlite3
 from datetime import datetime
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, List, Union
 
-DB_FILE = Path(__file__).resolve().parent / "live.db"
+BASE_PATH = Path(__file__).resolve().parent
+
+DEFAULT_DB_FILE = BASE_PATH / "live.db"
+ACCIONES_DB_FILE = BASE_PATH / "live.acciones.db"
+CEDEARS_DB_FILE = BASE_PATH / "live.cedears.db"
+BONOS_DB_FILE = BASE_PATH / "live.bonos.db"
 
 
-def init_db() -> None:
-    """Create the live prices table if it doesn't exist."""
-    conn = sqlite3.connect(DB_FILE)
+def get_db_file(ticker_type: Optional[str] = None) -> Path:
+    """Return the database file corresponding to ``ticker_type``."""
+    if ticker_type == "acciones":
+        return ACCIONES_DB_FILE
+    if ticker_type == "cedears":
+        return CEDEARS_DB_FILE
+    if ticker_type == "bonos":
+        return BONOS_DB_FILE
+    return DEFAULT_DB_FILE
+
+
+def _init_table(db_file: Union[str, Path]) -> None:
+    conn = sqlite3.connect(db_file)
     c = conn.cursor()
     c.execute(
         """
@@ -23,9 +38,17 @@ def init_db() -> None:
     conn.close()
 
 
-def get_price(ticker: str) -> Optional[Tuple[float, datetime]]:
+def init_db() -> None:
+    """Create the live price tables if they don't exist."""
+    for db in [DEFAULT_DB_FILE, ACCIONES_DB_FILE, CEDEARS_DB_FILE, BONOS_DB_FILE]:
+        _init_table(db)
+
+
+def get_price(ticker: str, db_file: Optional[Union[str, Path]] = None) -> Optional[Tuple[float, datetime]]:
     """Return price and timestamp for ticker if available."""
-    conn = sqlite3.connect(DB_FILE)
+    if db_file is None:
+        db_file = DEFAULT_DB_FILE
+    conn = sqlite3.connect(db_file)
     c = conn.cursor()
     c.execute(
         "SELECT price, updated_at FROM prices WHERE ticker = ?",
@@ -39,9 +62,11 @@ def get_price(ticker: str) -> Optional[Tuple[float, datetime]]:
     return None
 
 
-def list_tickers() -> List[str]:
+def list_tickers(db_file: Optional[Union[str, Path]] = None) -> List[str]:
     """Return all tickers currently stored in the database."""
-    conn = sqlite3.connect(DB_FILE)
+    if db_file is None:
+        db_file = DEFAULT_DB_FILE
+    conn = sqlite3.connect(db_file)
     c = conn.cursor()
     c.execute("SELECT ticker FROM prices")
     tickers = [r[0] for r in c.fetchall()]
@@ -49,11 +74,13 @@ def list_tickers() -> List[str]:
     return tickers
 
 
-def upsert_price(ticker: str, price: float, timestamp: Optional[datetime] = None) -> None:
+def upsert_price(ticker: str, price: float, timestamp: Optional[datetime] = None, db_file: Optional[Union[str, Path]] = None) -> None:
     """Insert or update price for ticker."""
     if timestamp is None:
         timestamp = datetime.utcnow()
-    conn = sqlite3.connect(DB_FILE)
+    if db_file is None:
+        db_file = DEFAULT_DB_FILE
+    conn = sqlite3.connect(db_file)
     c = conn.cursor()
     c.execute(
         """
