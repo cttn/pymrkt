@@ -22,10 +22,14 @@ def main() -> None:
 
     tickers = live_db.list_tickers()
     for ticker in tickers:
-        price = get_live_price(
+        result = get_live_price(
             ticker, fetcher, lock_minutes=lock_minutes, debug=args.debug
         )
-        print(ticker, price)
+        if result is None:
+            print(ticker, "N/A")
+        else:
+            price, updated_at = result
+            print(ticker, price, updated_at.isoformat() + "Z")
 
 
 if __name__ == "__main__":
