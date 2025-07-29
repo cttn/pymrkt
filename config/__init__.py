@@ -23,5 +23,24 @@ def get_lock_minutes() -> int:
     return int(cfg.get("lock_minutes", 15))
 
 
-__all__ = ["get_lock_minutes"]
+
+def get_server_host() -> str:
+    """Return the API server host from the configuration file."""
+    cfg = _load_config()
+    server = cfg.get("server", {})
+    return str(server.get("host", "127.0.0.1"))
+
+
+def get_server_port() -> int:
+    """Return the API server port from the configuration file."""
+    cfg = _load_config()
+    server = cfg.get("server", {})
+    return int(server.get("port", 8000))
+
+
+__all__ = [
+    "get_lock_minutes",
+    "get_server_host",
+    "get_server_port",
+]
 

@@ -1,5 +1,8 @@
 # Configuración de pymrkt
 lock_minutes: 15
+server:
+  host: 127.0.0.1
+  port: 8000
 sources:
   - name: yfinance
     enabled: true
