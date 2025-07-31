@@ -1,7 +1,12 @@
 from fastapi import FastAPI, HTTPException
 
 from config import get_lock_minutes, get_server_host, get_server_port
-from fetchers import YFinanceFetcher, DummyFetcher, BancoPianoFetcher
+from fetchers import (
+    YFinanceFetcher,
+    DummyFetcher,
+    BancoPianoFetcher,
+    Data912Fetcher,
+)
 from .live import get_live_price
 
 app = FastAPI()
@@ -10,6 +15,12 @@ fetchers = []
 try:
     if YFinanceFetcher is not None:
         fetchers.append(YFinanceFetcher())
+except Exception:
+    pass
+
+try:
+    if Data912Fetcher is not None:
+        fetchers.append(Data912Fetcher())
 except Exception:
     pass
 

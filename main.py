@@ -2,7 +2,12 @@
 
 import argparse
 
-from fetchers import YFinanceFetcher, DummyFetcher, BancoPianoFetcher
+from fetchers import (
+    YFinanceFetcher,
+    DummyFetcher,
+    BancoPianoFetcher,
+    Data912Fetcher,
+)
 from api import get_live_price
 from config import get_lock_minutes
 from storage import live as live_db
@@ -20,6 +25,10 @@ def main() -> None:
     fetchers = []
     try:
         fetchers.append(YFinanceFetcher())
+    except Exception:
+        pass
+    try:
+        fetchers.append(Data912Fetcher())
     except Exception:
         pass
     try:
