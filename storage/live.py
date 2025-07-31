@@ -1,7 +1,7 @@
-from pathlib import Path
 import sqlite3
 from datetime import datetime
-from typing import Optional, Tuple, List, Union
+from pathlib import Path
+from typing import List, Optional, Tuple, Union
 
 BASE_PATH = Path(__file__).resolve().parent
 
@@ -9,6 +9,7 @@ DEFAULT_DB_FILE = BASE_PATH / "live.db"
 ACCIONES_DB_FILE = BASE_PATH / "live.acciones.db"
 CEDEARS_DB_FILE = BASE_PATH / "live.cedears.db"
 BONOS_DB_FILE = BASE_PATH / "live.bonos.db"
+MONEDAS_DB_FILE = BASE_PATH / "live.monedas.db"
 
 
 def get_db_file(ticker_type: Optional[str] = None) -> Path:
@@ -19,6 +20,8 @@ def get_db_file(ticker_type: Optional[str] = None) -> Path:
         return CEDEARS_DB_FILE
     if ticker_type == "bonos":
         return BONOS_DB_FILE
+    if ticker_type == "monedas":
+        return MONEDAS_DB_FILE
     return DEFAULT_DB_FILE
 
 
@@ -40,11 +43,19 @@ def _init_table(db_file: Union[str, Path]) -> None:
 
 def init_db() -> None:
     """Create the live price tables if they don't exist."""
-    for db in [DEFAULT_DB_FILE, ACCIONES_DB_FILE, CEDEARS_DB_FILE, BONOS_DB_FILE]:
+    for db in [
+        DEFAULT_DB_FILE,
+        ACCIONES_DB_FILE,
+        CEDEARS_DB_FILE,
+        BONOS_DB_FILE,
+        MONEDAS_DB_FILE,
+    ]:
         _init_table(db)
 
 
-def get_price(ticker: str, db_file: Optional[Union[str, Path]] = None) -> Optional[Tuple[float, datetime]]:
+def get_price(
+    ticker: str, db_file: Optional[Union[str, Path]] = None
+) -> Optional[Tuple[float, datetime]]:
     """Return price and timestamp for ticker if available."""
     if db_file is None:
         db_file = DEFAULT_DB_FILE
@@ -74,7 +85,12 @@ def list_tickers(db_file: Optional[Union[str, Path]] = None) -> List[str]:
     return tickers
 
 
-def upsert_price(ticker: str, price: float, timestamp: Optional[datetime] = None, db_file: Optional[Union[str, Path]] = None) -> None:
+def upsert_price(
+    ticker: str,
+    price: float,
+    timestamp: Optional[datetime] = None,
+    db_file: Optional[Union[str, Path]] = None,
+) -> None:
     """Insert or update price for ticker."""
     if timestamp is None:
         timestamp = datetime.utcnow()

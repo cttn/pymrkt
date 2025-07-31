@@ -2,11 +2,13 @@ from fastapi import FastAPI, HTTPException
 
 from config import get_lock_minutes, get_server_host, get_server_port
 from fetchers import (
-    YFinanceFetcher,
-    DummyFetcher,
     BancoPianoFetcher,
     Data912Fetcher,
+    DolarApiFetcher,
+    DummyFetcher,
+    YFinanceFetcher,
 )
+
 from .live import get_live_price
 
 app = FastAPI()
@@ -21,6 +23,12 @@ except Exception:
 try:
     if Data912Fetcher is not None:
         fetchers.append(Data912Fetcher())
+except Exception:
+    pass
+
+try:
+    if DolarApiFetcher is not None:
+        fetchers.append(DolarApiFetcher())
 except Exception:
     pass
 
@@ -71,4 +79,3 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host=get_server_host(), port=get_server_port())
-

@@ -1,11 +1,12 @@
 import logging
-from datetime import datetime, date
-from typing import Optional, List, Tuple
+from datetime import date, datetime
+from typing import List, Optional, Tuple
 
 import requests
 
-from .base import PriceFetcher
 from storage import live as live_db
+
+from .base import PriceFetcher
 
 logger = logging.getLogger(__name__)
 
@@ -18,12 +19,14 @@ class Data912Fetcher(PriceFetcher):
 
     URL = "https://data912.com/live/arg_bonds"
 
-    def get_price(self, ticker: str, ticker_type: Optional[str] = None) -> Optional[float]:
+    def get_price(
+        self, ticker: str, ticker_type: Optional[str] = None
+    ) -> Optional[float]:
         """Return last traded price for ``ticker`` using Data912.
 
         All retrieved bonds are stored in ``live.bonos.db`` for reuse.
         """
-        if ticker_type not in {None, "bonos"}:
+        if ticker_type != "bonos":
             return None
 
         try:
@@ -56,6 +59,8 @@ class Data912Fetcher(PriceFetcher):
 
         return result_price
 
-    def get_history(self, ticker: str, start: date, end: date) -> List[Tuple[date, float]]:
+    def get_history(
+        self, ticker: str, start: date, end: date
+    ) -> List[Tuple[date, float]]:
         """Historical data is not supported for Data912."""
         return []

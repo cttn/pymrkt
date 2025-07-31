@@ -2,23 +2,22 @@
 
 import argparse
 
-from fetchers import (
-    YFinanceFetcher,
-    DummyFetcher,
-    BancoPianoFetcher,
-    Data912Fetcher,
-)
 from api import get_live_price
 from config import get_lock_minutes
-from storage import live as live_db
+from fetchers import (
+    BancoPianoFetcher,
+    Data912Fetcher,
+    DolarApiFetcher,
+    DummyFetcher,
+    YFinanceFetcher,
+)
 from scripts import init_db
+from storage import live as live_db
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run pymrkt")
-    parser.add_argument(
-        "--debug", action="store_true", help="Enable debug output"
-    )
+    parser.add_argument("--debug", action="store_true", help="Enable debug output")
     args = parser.parse_args()
 
     init_db.main()
@@ -29,6 +28,10 @@ def main() -> None:
         pass
     try:
         fetchers.append(Data912Fetcher())
+    except Exception:
+        pass
+    try:
+        fetchers.append(DolarApiFetcher())
     except Exception:
         pass
     try:
