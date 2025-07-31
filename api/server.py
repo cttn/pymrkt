@@ -9,7 +9,11 @@ from fetchers import (
     YFinanceFetcher,
 )
 
+from storage import live as live_db
+
 from .live import get_live_price
+
+live_db.init_db()
 
 app = FastAPI()
 
