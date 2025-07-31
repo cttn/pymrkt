@@ -121,7 +121,10 @@ export DOLAR_SCRAPER_API_KEY=clave123
 export SECRET_API_KEY=clave321
 ```
 
-5. Inicializar la base
+5. (Opcional) Inicializar la base manualmente
+
+El servidor crea las tablas automáticamente al iniciar, por lo que este paso es
+generalmente innecesario.
 
 ```bash
 python scripts/init_db.py
@@ -145,8 +148,7 @@ python main.py --debug
 ```bash
 python -m api.server
 ```
-El host y el puerto utilizados por la API se pueden ajustar en
-`config/config.yaml`.
+Al iniciarse, el servidor crea automáticamente las tablas necesarias en las bases de datos, por lo que no es obligatorio ejecutar `scripts/init_db.py` de forma previa. El host y el puerto utilizados por la API se pueden ajustar en `config/config.yaml`.
 
 8. Consultar la API
 
