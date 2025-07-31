@@ -4,6 +4,11 @@ from .base import PriceFetcher
 from .dummy_fetcher import DummyFetcher
 
 try:
+    from .dolarapi_fetcher import DolarApiFetcher
+except Exception:  # pragma: no cover - optional dependency
+    DolarApiFetcher = None
+
+try:
     from .data912_fetcher import Data912Fetcher
 except Exception:  # pragma: no cover - optional dependency
     Data912Fetcher = None
@@ -24,4 +29,5 @@ __all__ = [
     "YFinanceFetcher",
     "BancoPianoFetcher",
     "Data912Fetcher",
+    "DolarApiFetcher",
 ]
