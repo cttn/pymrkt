@@ -52,16 +52,16 @@ archivo YAML (`config/config.yaml`).
 
 Usamos FastAPI para exponer:
 
-- `GET /precio/<ticker>`  
+- `GET /price/<ticker>`
   Último precio disponible.
 
-- `GET /historial/<ticker>?desde=YYYY-MM-DD&hasta=YYYY-MM-DD`  
+- `GET /historial/<ticker>?desde=YYYY-MM-DD&hasta=YYYY-MM-DD`
   Histórico de precios.
 
-- `GET /batch?ticker=YPF,AAPL`  
+- `GET /batch?ticker=YPF,AAPL`
   Precios recientes de múltiples tickers.
 
-- `GET /status`  
+- `GET /status`
   Estado del sistema.
 
 ---
@@ -161,6 +161,8 @@ precio de un ticker usando `curl`:
 curl http://127.0.0.1:8000/price/AAPL
 # Con tipo de ticker (por ejemplo "acciones")
 curl http://127.0.0.1:8000/price/acciones/AAPL
+# Historial entre dos fechas
+curl "http://127.0.0.1:8000/historial/AAPL?desde=2023-01-01&hasta=2023-01-31"
 ```
 
 La respuesta será un JSON similar a:

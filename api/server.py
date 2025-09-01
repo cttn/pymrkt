@@ -1,3 +1,5 @@
+from datetime import date
+
 from fastapi import FastAPI, HTTPException
 
 from config import get_lock_minutes, get_server_host, get_server_port
@@ -10,10 +12,13 @@ from fetchers import (
 )
 
 from storage import live as live_db
+from storage import historical as historical_db
 
 from .live import get_live_price
+from .history import get_historical_prices
 
 live_db.init_db()
+historical_db.init_db()
 
 app = FastAPI()
 
@@ -77,6 +82,14 @@ def price_endpoint(ticker: str):
         "price": price,
         "updated_at": updated_at.isoformat() + "Z",
     }
+
+
+@app.get("/historial/{ticker}")
+def history_endpoint(ticker: str, desde: date, hasta: date):
+    history = get_historical_prices(ticker, desde, hasta)
+    if not history:
+        raise HTTPException(status_code=404, detail="History not available")
+    return {"ticker": ticker.upper(), "history": history}
 
 
 if __name__ == "__main__":
