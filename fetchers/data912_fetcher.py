@@ -3,6 +3,7 @@ from datetime import date, datetime
 from typing import List, Optional, Tuple
 
 import requests
+import warnings
 
 from storage import live as live_db
 
@@ -63,4 +64,5 @@ class Data912Fetcher(PriceFetcher):
         self, ticker: str, start: date, end: date
     ) -> List[Tuple[date, float]]:
         """Historical data is not supported for Data912."""
+        warnings.warn("Data912Fetcher does not provide historical data", stacklevel=2)
         return []

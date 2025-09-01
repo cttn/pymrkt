@@ -242,7 +242,9 @@ curl "http://127.0.0.1:8000/historial/YPF?desde=2023-01-01&hasta=2023-01-31"
 ```
 
 También podés obtener y almacenar históricos desde Python usando un
-`PriceFetcher` que implemente `get_history`:
+`PriceFetcher` que implemente `get_history`. Los fetchers con soporte
+histórico, como `YFinanceFetcher`, insertan automáticamente cada registro en la
+base `storage/historical.db`:
 
 ```python
 from datetime import date
@@ -253,7 +255,7 @@ historical.init_db()
 fetcher = YFinanceFetcher()
 history = fetcher.get_history("AAPL", date(2023, 1, 1), date(2023, 1, 5))
 for d, price in history:
-    historical.insert_record("AAPL", d, price, price, 0)
+    print(d, price)
 ```
 
 Primero ejecutá `scripts/init_db.py` para crear la base
