@@ -225,6 +225,48 @@ price, updated_at = get_live_price("AL30", fetchers, ticker_type="bonos")
 La función filtrará automáticamente los *fetchers* para que cada consulta se
 realice solo a las fuentes adecuadas.
 
+### Historial de precios
+
+El servicio también permite consultar series temporales completas de un activo
+mediante el endpoint:
+
+`GET /historial/<ticker>?desde=YYYY-MM-DD&hasta=YYYY-MM-DD`
+
+Este recurso devuelve los precios entre las fechas indicadas (inclusive). Por
+ejemplo:
+
+```bash
+curl "http://127.0.0.1:8000/historial/YPF?desde=2023-01-01&hasta=2023-01-31"
+```
+
+También podés obtener y almacenar históricos desde Python usando un
+`PriceFetcher` que implemente `get_history`:
+
+```python
+from datetime import date
+from fetchers import YFinanceFetcher
+from storage import historical
+
+historical.init_db()
+fetcher = YFinanceFetcher()
+history = fetcher.get_history("AAPL", date(2023, 1, 1), date(2023, 1, 5))
+for d, price in history:
+    historical.insert_record("AAPL", d, price, price, 0)
+```
+
+Primero ejecutá `scripts/init_db.py` para crear la base
+`storage/historical.db`:
+
+```bash
+python scripts/init_db.py
+```
+
+Luego podés inspeccionar los registros almacenados con `sqlite3`:
+
+```bash
+sqlite3 storage/historical.db "SELECT * FROM history LIMIT 5;"
+```
+
 ---
 
 ## 🔐 Seguridad
