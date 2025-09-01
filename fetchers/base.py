@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from datetime import date
+from typing import List, Optional, Tuple
 
 
 class PriceFetcher(ABC):
@@ -20,5 +21,14 @@ class PriceFetcher(ABC):
         ``ticker_type`` allows fetchers to adjust the query depending on the
         type of asset (e.g. ``"acciones"`` or ``"cedears"``). Unsupported
         types should return ``None``.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_history(self, ticker: str, start: date, end: date) -> List[Tuple[date, float]]:
+        """Return historical prices for ``ticker`` between ``start`` and ``end``.
+
+        Subclasses that do not implement historical queries should return an
+        empty list and issue a warning.
         """
         raise NotImplementedError

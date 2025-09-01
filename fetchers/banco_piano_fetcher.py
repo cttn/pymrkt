@@ -3,7 +3,9 @@ import logging
 import re
 import requests
 import pandas as pd
-from typing import Optional, List, Tuple
+import warnings
+from datetime import date
+from typing import List, Optional, Tuple
 
 from .base import PriceFetcher
 
@@ -79,6 +81,7 @@ class BancoPianoFetcher(PriceFetcher):
         except Exception:
             return None
 
-    def get_history(self, *args, **kwargs) -> List[Tuple]:
+    def get_history(self, ticker: str, start: date, end: date) -> List[Tuple[date, float]]:
         """Historical data not supported for this source."""
+        warnings.warn("BancoPianoFetcher does not provide historical data", stacklevel=2)
         return []

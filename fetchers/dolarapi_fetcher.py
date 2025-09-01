@@ -2,6 +2,8 @@ import logging
 from typing import List, Optional, Tuple
 
 import requests
+import warnings
+from datetime import date
 
 from .base import PriceFetcher
 
@@ -35,6 +37,7 @@ class DolarApiFetcher(PriceFetcher):
             logger.debug("dolarapi request failed: %s", exc)
             return None
 
-    def get_history(self, *args, **kwargs) -> List[Tuple]:
+    def get_history(self, ticker: str, start: date, end: date) -> List[Tuple[date, float]]:
         """Historical data not provided by this API."""
+        warnings.warn("DolarApiFetcher does not provide historical data", stacklevel=2)
         return []
